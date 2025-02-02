@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
+  getHeadHash,
   getHeadState,
   type Workspace,
   WorkspaceImp,
@@ -13,9 +14,14 @@ import {
   isSynced,
   SynchronizationState,
 } from "../branch-synchronizer.js";
+import { CommandCommit, Commit } from "../../commit/index.js";
+import { MAIN_BRANCH, makeRemoteBranch } from "../../branches/branches.js";
 
 describe("fetchAndSynchronizeBranch", () => {
   let base: Workspace<TestState>;
+
+  let c1: Commit<TestState>;
+  let c2: Commit<TestState>;
 
   let ahead1: Workspace<TestState>;
   let ahead2: Workspace<TestState>;
@@ -23,8 +29,11 @@ describe("fetchAndSynchronizeBranch", () => {
   beforeEach(() => {
     base = WorkspaceImp.makeNew(new TestState(5));
 
-    ahead1 = new WorkspaceManipulator(base).apply(new SetCommand(6)).workspace;
-    ahead2 = new WorkspaceManipulator(base).apply(new SetCommand(7)).workspace;
+    c1 = new CommandCommit(getHeadHash(base), new SetCommand(6));
+    c2 = new CommandCommit(getHeadHash(base), new SetCommand(7));
+
+    ahead1 = new WorkspaceManipulator(base).commit(c1).workspace;
+    ahead2 = new WorkspaceManipulator(base).commit(c2).workspace;
   });
 
   it("Throws an error for local branch missing.", () => {
@@ -72,7 +81,13 @@ describe("fetchAndSynchronizeBranch", () => {
 
     const result = await fetchAndSynchronizeBranch(ahead2, fetcher);
 
-    expectConflict(result, ahead1);
+    const withBoth = ahead2
+      .addCommit(c1)
+      .setBranches(
+        ahead2.branches.upsertBranch(makeRemoteBranch(MAIN_BRANCH, c1.hash))
+      );
+
+    expectConflict(result, withBoth);
   });
 
   function expectSynced(
