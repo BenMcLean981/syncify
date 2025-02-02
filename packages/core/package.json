@@ -17,9 +17,7 @@
     "test:watch": "vitest"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
     "@syncify/eslint-config": "*",
-    "@syncify/jest-presets": "*",
     "@syncify/typescript-config": "*",
     "@types/node": "^22.12.0",
     "@types/sha1": "^1.1.5",
