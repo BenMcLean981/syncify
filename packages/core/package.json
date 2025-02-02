@@ -1,0 +1,36 @@
+{
+  "name": "@syncify/core",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.cts",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src/",
+    "check-types": "tsc --noEmit",
+    "test": "vitest --run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@syncify/eslint-config": "*",
+    "@syncify/jest-presets": "*",
+    "@syncify/typescript-config": "*",
+    "@types/node": "^22.12.0",
+    "@types/sha1": "^1.1.5",
+    "@types/uuid": "^10.0.0",
+    "eslint": "^9.19.0",
+    "tsup": "^8.3.6",
+    "typescript": "5.7.3",
+    "vitest": "^3.0.4"
+  },
+  "dependencies": {
+    "sha1": "^1.1.1",
+    "uuid": "^11.0.5"
+  }
+}
