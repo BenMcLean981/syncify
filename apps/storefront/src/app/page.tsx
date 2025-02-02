@@ -1,6 +1,6 @@
-import { log } from "@repo/logger";
-import { Link } from "@repo/ui/link";
-import { CounterButton } from "@repo/ui/counter-button";
+import { log } from "@syncify/logger";
+import { Link } from "@syncify/ui/link";
+import { CounterButton } from "@syncify/ui/counter-button";
 
 export const metadata = {
   title: "Store | Kitchen Sink",

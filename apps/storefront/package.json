@@ -11,16 +11,16 @@
     "start": "next start"
   },
   "dependencies": {
-    "@repo/logger": "*",
-    "@repo/ui": "*",
+    "@syncify/logger": "*",
+    "@syncify/ui": "*",
     "next": "^15.1.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^15.1.6",
-    "@repo/eslint-config": "*",
-    "@repo/typescript-config": "*",
+    "@syncify/eslint-config": "*",
+    "@syncify/typescript-config": "*",
     "@types/node": "^22.12.0",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
