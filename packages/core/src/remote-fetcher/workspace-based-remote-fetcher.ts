@@ -1,13 +1,12 @@
-import { type RemoteFetcher } from "./remote-fetcher.js";
-import { type Commit } from "../commit/index.js";
-import { type Workspace, WorkspaceImp } from "../workspace/index.js";
-import { type Memento } from "../memento/index.js";
-import { getAllPreviousCommitsHashes } from "../workspace/navigation.js";
-import { makeLocalBranch, Branch } from "../branches/branches.js";
+import { type RemoteFetcher } from "./remote-fetcher";
+import { type Commit } from "../commit";
+import { type Workspace, WorkspaceImp } from "../workspace";
+import { type Memento } from "../memento";
+import { getAllPreviousCommitsHashes } from "../workspace/navigation";
+import { makeLocalBranch, Branch } from "../branches/branches";
 
 export class WorkspaceBasedRemoteFetcher<TState extends Memento>
-  implements RemoteFetcher<TState>
-{
+  implements RemoteFetcher<TState> {
   public constructor(workspace: Workspace<TState> = WorkspaceImp.makeEmpty()) {
     this._workspace = workspace;
   }

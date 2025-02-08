@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { isEven, isOdd } from "../utils.js";
+import { isEven, isOdd } from "../utils";
 
 describe("isOdd", () => {
   it("Returns false for zero.", () => {

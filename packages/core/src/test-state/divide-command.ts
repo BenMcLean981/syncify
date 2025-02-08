@@ -1,6 +1,6 @@
-import { TestState } from './test-state.js';
-import { type Command } from '../command/index.js';
-import { type Snapshot } from '../memento/index.js';
+import { TestState } from './test-state';
+import { type Command } from '../command';
+import { type Snapshot } from '../memento';
 
 export class DivideCommand implements Command<TestState> {
   private readonly _value: number;

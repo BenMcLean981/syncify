@@ -1,5 +1,5 @@
-import { TOL } from '../tol.js';
-import { isEqualable } from './equalable.js';
+import { TOL } from '../tol';
+import { isEqualable } from './equalable';
 
 export type EqualityChecker<T> = (t1: T, t2: T, tol?: number) => boolean;
 

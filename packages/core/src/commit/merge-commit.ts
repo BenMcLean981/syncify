@@ -1,7 +1,7 @@
-import { type Commit } from './commit.js';
-import { type Memento } from '../memento/index.js';
+import { type Commit } from './commit';
+import { type Memento } from '../memento';
 import sha1 from 'sha1';
-import { type Workspace } from '../workspace/index.js';
+import { type Workspace } from '../workspace';
 
 export class MergeCommit<TState extends Memento> implements Commit<TState> {
   private readonly _hash: string;

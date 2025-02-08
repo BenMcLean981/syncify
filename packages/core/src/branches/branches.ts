@@ -1,4 +1,4 @@
-import { type Equalable } from '../equality/index.js';
+import { type Equalable } from '../equality';
 
 export interface Branches extends Equalable {
   getAll(): ReadonlyArray<Branch>;

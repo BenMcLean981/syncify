@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { SubtractCommand } from "../subtract-command.js";
-import { TestState } from "../test-state.js";
+import { SubtractCommand } from "../subtract-command";
+import { TestState } from "../test-state";
 
 describe("SubtractCommand", () => {
   describe("apply", () => {

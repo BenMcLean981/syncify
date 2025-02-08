@@ -1,1 +1,1 @@
-export * from './remote-fetcher.js';
+export * from './remote-fetcher';

@@ -1,6 +1,6 @@
-import { type Commit } from './commit.js';
+import { type Commit } from './commit';
 import sha1 from 'sha1';
-import { type Workspace } from '../workspace/index.js';
+import { type Workspace } from '../workspace';
 
 export class RevertCommit<TState> implements Commit<TState> {
   private readonly _hash: string;

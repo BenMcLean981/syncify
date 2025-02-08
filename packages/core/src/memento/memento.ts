@@ -1,4 +1,4 @@
-import type { Snapshot } from './snapshot.js';
+import type { Snapshot } from './snapshot';
 
 export interface Memento {
   getSnapshot(): Snapshot;

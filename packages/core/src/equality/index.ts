@@ -1,2 +1,2 @@
-export * from './equalable.js';
-export * from './equality-checker.js';
+export * from './equalable';
+export * from './equality-checker';

@@ -1,2 +1,2 @@
-export * from './branches-imp.js';
-export * from './branches.js';
+export * from './branches-imp';
+export * from './branches';

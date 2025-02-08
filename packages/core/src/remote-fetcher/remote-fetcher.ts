@@ -1,5 +1,5 @@
-import { type Commit } from '../commit/commit.js';
-import { type Branch } from '../branches/index.js';
+import { type Commit } from '../commit/commit';
+import { type Branch } from '../branches';
 
 export interface RemoteFetcher<TState> {
   /**

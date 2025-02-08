@@ -1,6 +1,6 @@
 import sha1 from 'sha1';
-import { type Memento } from '../memento/memento.js';
-import { type Commit } from './commit.js';
+import { type Memento } from '../memento/memento';
+import { type Commit } from './commit';
 
 export class InitialCommit<TState extends Memento> implements Commit<TState> {
   private readonly _hash: string;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { equalInOrder, haveSameItems, isEmpty } from '../iterable-checks.js';
+import { equalInOrder, haveSameItems, isEmpty } from '../iterable-checks';
 
 const areEqual = (n1: number, n2: number) => n1 === n2;
 

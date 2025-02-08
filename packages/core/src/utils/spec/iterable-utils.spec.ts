@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { takeWhile } from '../iterable-utils.js';
-import { equalInOrder, isEmpty } from '../iterable-checks.js';
+import { takeWhile } from '../iterable-utils';
+import { equalInOrder, isEmpty } from '../iterable-checks';
 
 describe('takeWhile', () => {
   it('Returns empty for empty and continueCb returns false.', () => {

@@ -1,6 +1,6 @@
-import { TestState } from './test-state.js';
-import { type Command } from '../command/index.js';
-import { type Snapshot } from '../memento/index.js';
+import { TestState } from './test-state';
+import { type Command } from '../command';
+import { type Snapshot } from '../memento';
 
 export class AddCommand implements Command<TestState> {
   private readonly _value: number;
@@ -8,7 +8,7 @@ export class AddCommand implements Command<TestState> {
   public constructor(value: number) {
     this._value = value;
   }
-  
+
   public static makeFromSnapshot(snapshot: AddCommandSnapshot): AddCommand {
     return new AddCommand(snapshot.value);
   }

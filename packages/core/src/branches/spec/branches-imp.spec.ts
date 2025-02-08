@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { BranchesImp } from "../branches-imp.js";
-import { makeLocalBranch, makeRemoteBranch } from "../branches.js";
+import { BranchesImp } from "../branches-imp";
+import { makeLocalBranch, makeRemoteBranch } from "../branches";
 
 describe("BranchesImp", () => {
   describe("equals", () => {

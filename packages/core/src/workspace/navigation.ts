@@ -1,5 +1,5 @@
-import type { Workspace } from './workspace.js';
-import type { Commit } from '../commit/index.js';
+import type { Workspace } from './workspace';
+import type { Commit } from '../commit';
 
 export function getAllPreviousCommitsHashes<TState>(
   workspace: Workspace<TState>,

@@ -1,1 +1,1 @@
-export * from './branch-synchronizer.js';
+export * from './branch-synchronizer';

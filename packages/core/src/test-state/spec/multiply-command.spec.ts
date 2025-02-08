@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { MultiplyCommand } from "../multiply-command.js";
-import { TestState } from "../test-state.js";
+import { MultiplyCommand } from "../multiply-command";
+import { TestState } from "../test-state";
 
 describe("MultiplyCommand", () => {
   describe("apply", () => {

@@ -1,4 +1,4 @@
-export * from './iterable-utils.js';
-export * from './iterable-checks.js';
+export * from './iterable-utils';
+export * from './iterable-checks';
 
-export * from './utils.js';
+export * from './utils';

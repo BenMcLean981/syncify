@@ -1,7 +1,7 @@
-import { type Equalable } from '../equality/index.js';
-import { type Snapshot } from '../memento/snapshot.js';
-import { type Commit, type CommitSnapshot } from '../commit/commit.js';
-import { type Branches } from '../branches/branches.js';
+import { type Equalable } from '../equality';
+import { type Snapshot } from '../memento/snapshot';
+import { type Commit, type CommitSnapshot } from '../commit/commit';
+import { type Branches } from '../branches/branches';
 
 export interface Workspace<TState> extends Equalable {
   readonly id: string;

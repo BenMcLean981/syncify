@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { TestState } from "../test-state.js";
+import { TestState } from "../test-state";
 
 describe("TestState", () => {
   describe("equals", () => {

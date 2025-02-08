@@ -4,7 +4,7 @@ import {
   BranchesImp,
   makeLocalBranch,
   makeRemoteBranch,
-} from "../../branches/index.js";
+} from "../../branches";
 
 describe("BranchesImp", () => {
   let branches: Branches;

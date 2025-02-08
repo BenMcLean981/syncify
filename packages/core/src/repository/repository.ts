@@ -1,4 +1,4 @@
-import type { ID, Identifiable } from '../id.js';
+import type { ID, Identifiable } from '../id';
 
 export interface Repository<T extends Identifiable> {
   contains(id: ID): Promise<boolean>;

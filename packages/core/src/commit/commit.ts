@@ -1,5 +1,5 @@
 import type { Snapshot } from '../memento/snapshot.ts';
-import { type Workspace } from '../workspace/index.js';
+import { type Workspace } from '../workspace';
 
 export interface Commit<TState> {
   readonly hash: string;

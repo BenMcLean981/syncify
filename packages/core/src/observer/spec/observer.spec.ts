@@ -1,6 +1,6 @@
-import { type Subject } from "../subject.js";
-import { SubjectImp } from "../subject-imp.js";
-import { DelegateObserver } from "../delegate-observer.js";
+import { type Subject } from "../subject";
+import { SubjectImp } from "../subject-imp";
+import { DelegateObserver } from "../delegate-observer";
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 
 describe("Observer", () => {

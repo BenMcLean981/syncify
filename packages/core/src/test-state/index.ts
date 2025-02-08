@@ -1,7 +1,7 @@
-export * from './test-state.js';
+export * from './test-state';
 
-export * from './add-command.js';
-export * from './divide-command.js';
-export * from './set-command.js';
-export * from './subtract-command.js';
-export * from './multiply-command.js';
+export * from './add-command';
+export * from './divide-command';
+export * from './set-command';
+export * from './subtract-command';
+export * from './multiply-command';

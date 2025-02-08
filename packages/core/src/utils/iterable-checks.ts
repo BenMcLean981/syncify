@@ -1,7 +1,7 @@
 import {
   defaultEqualityChecker,
   type EqualityChecker,
-} from '../equality/index.js';
+} from '../equality';
 
 export function isEmpty(iterable: Iterable<unknown>) {
   return [...iterable].length === 0;

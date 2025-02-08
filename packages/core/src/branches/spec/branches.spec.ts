@@ -3,7 +3,7 @@ import {
   areBranchesEqual,
   makeLocalBranch,
   makeRemoteBranch,
-} from "../branches.js";
+} from "../branches";
 
 describe("areBranchesEqual", () => {
   it("Returns true for same branches.", () => {

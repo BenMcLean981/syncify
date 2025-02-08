@@ -1,18 +1,18 @@
-import { getHeadHash, WorkspaceImp } from "../workspace-imp.js";
+import { getHeadHash, WorkspaceImp } from "../workspace-imp";
 import {
   CommandCommit,
   type Commit,
   InitialCommit,
   MergeCommit,
-} from "../../commit/index.js";
+} from "../../commit";
 import {
   type LocalBranch,
   MAIN_BRANCH,
   makeLocalBranch,
-} from "../../branches/branches.js";
-import { SetCommand, TestState } from "../../test-state/index.js";
+} from "../../branches/branches";
+import { SetCommand, TestState } from "../../test-state";
 import { beforeEach, describe, expect, it } from "vitest";
-import { type Workspace } from "../workspace.js";
+import { type Workspace } from "../workspace";
 
 describe("WorkspaceImp", () => {
   it("Initializes to an empty state with a name.", () => {

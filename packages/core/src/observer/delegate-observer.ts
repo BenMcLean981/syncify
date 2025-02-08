@@ -1,5 +1,5 @@
 import type { Observer } from './observer.ts';
-import { type Subject } from './subject.js';
+import { type Subject } from './subject';
 
 export class DelegateObserver<T> implements Observer<T> {
   private readonly _fn: (data: T) => Promise<void>;

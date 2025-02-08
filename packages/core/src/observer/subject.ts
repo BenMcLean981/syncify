@@ -1,4 +1,4 @@
-import { type Observer } from './observer.js';
+import { type Observer } from './observer';
 
 export interface Subject<T> {
   readonly data: T | null;

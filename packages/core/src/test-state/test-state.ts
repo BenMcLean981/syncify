@@ -1,5 +1,5 @@
-import type { Memento, Snapshot } from '../memento/index.js';
-import type { Equalable } from '../equality/index.js';
+import type { Memento, Snapshot } from '../memento';
+import type { Equalable } from '../equality';
 
 export class TestState implements Memento, Equalable {
   private readonly _value: number;

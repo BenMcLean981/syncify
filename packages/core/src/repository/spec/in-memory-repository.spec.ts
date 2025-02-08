@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 
-import { type Identifiable } from "../../id.js";
-import { InMemoryRepository } from "../in-memory-repository.js";
-import { DelegateObserver } from "../../observer/index.js";
-import { ObservableRepository } from "../observable-repository.js";
+import { type Identifiable } from "../../id";
+import { InMemoryRepository } from "../in-memory-repository";
+import { DelegateObserver } from "../../observer";
+import { ObservableRepository } from "../observable-repository";
 
 type Person = Identifiable & { name: string };
 

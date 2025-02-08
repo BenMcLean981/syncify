@@ -1,6 +1,6 @@
-import { type Repository } from './repository.js';
-import { type Subject } from '../observer/index.js';
-import { type Identifiable } from '../id.js';
+import { type Repository } from './repository';
+import { type Subject } from '../observer';
+import { type Identifiable } from '../id';
 
 export interface ObservableRepository<T extends Identifiable>
   extends Repository<T> {

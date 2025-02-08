@@ -1,17 +1,17 @@
-import { type Workspace } from './workspace.js';
+import { type Workspace } from './workspace';
 import {
   CommandCommit,
   type Commit,
   InitialCommit,
   MergeCommit,
   RevertCommit,
-} from '../commit/index.js';
-import { getHeadHash } from './workspace-imp.js';
-import { MAIN_BRANCH, makeLocalBranch } from '../branches/index.js';
-import { type Command } from '../command/index.js';
-import { type Memento } from '../memento/index.js';
-import { getAllPrimaryPreviousCommits } from './navigation.js';
-import { isOdd } from '../utils/index.js';
+} from '../commit';
+import { getHeadHash } from './workspace-imp';
+import { MAIN_BRANCH, makeLocalBranch } from '../branches';
+import { type Command } from '../command';
+import { type Memento } from '../memento';
+import { getAllPrimaryPreviousCommits } from './navigation';
+import { isOdd } from '../utils';
 
 // TODO: Stop iterating commits iterable for performance.
 

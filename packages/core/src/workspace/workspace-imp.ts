@@ -1,15 +1,15 @@
-import type { Workspace } from "./workspace.js";
-import type { Commit } from "../commit/index.js";
-import { InitialCommit } from "../commit/index.js";
-import type { Memento } from "../memento/index.js";
-import { uuid } from "../id.js";
+import type { Workspace } from "./workspace";
+import type { Commit } from "../commit";
+import { InitialCommit } from "../commit";
+import type { Memento } from "../memento";
+import { uuid } from "../id";
 import {
   type Branches,
   BranchesImp,
   MAIN_BRANCH,
   makeLocalBranch,
-} from "../branches/index.js";
-import { haveSameItems } from "../utils/index.js";
+} from "../branches";
+import { haveSameItems } from "../utils";
 
 export class WorkspaceImp<TState> implements Workspace<TState> {
   private readonly _commits: Record<string, Commit<TState>>;

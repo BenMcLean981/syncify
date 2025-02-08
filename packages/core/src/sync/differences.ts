@@ -1,5 +1,5 @@
-import { type Workspace } from '../workspace/index.js';
-import { getAllPreviousCommitsHashes } from '../workspace/navigation.js';
+import { type Workspace } from '../workspace';
+import { getAllPreviousCommitsHashes } from '../workspace/navigation';
 
 export type Differences = {
   /**

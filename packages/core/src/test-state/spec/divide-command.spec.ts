@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { DivideCommand } from '../divide-command.js';
-import { TestState } from '../test-state.js';
+import { DivideCommand } from '../divide-command';
+import { TestState } from '../test-state';
 
 describe('DivideCommand', () => {
   describe('apply', () => {

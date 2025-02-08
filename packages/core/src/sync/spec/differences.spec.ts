@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { type Workspace, WorkspaceImp } from "../../workspace/index.js";
-import { SetCommand, TestState } from "../../test-state/index.js";
-import { WorkspaceManipulator } from "../../workspace/workspace-manipulator.js";
-import { haveSameItems } from "../../utils/index.js";
-import { getAllPreviousCommitsHashes } from "../../workspace/navigation.js";
-import { MAIN_BRANCH } from "../../branches/index.js";
+import { type Workspace, WorkspaceImp } from "../../workspace";
+import { SetCommand, TestState } from "../../test-state";
+import { WorkspaceManipulator } from "../../workspace/workspace-manipulator";
+import { haveSameItems } from "../../utils";
+import { getAllPreviousCommitsHashes } from "../../workspace/navigation";
+import { MAIN_BRANCH } from "../../branches";
 
 describe("getAllPreviousCommits", () => {
   let initial: Workspace<TestState>;

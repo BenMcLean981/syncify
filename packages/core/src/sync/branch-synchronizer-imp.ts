@@ -1,8 +1,8 @@
-import { type Workspace } from '../workspace/index.js';
-import { type RemoteFetcher } from '../remote-fetcher/index.js';
-import { MAIN_BRANCH, makeLocalBranch, makeRemoteBranch, } from '../branches/index.js';
-import { type Differences, getDifferences } from './differences.js';
-import { getAllPreviousCommitsHashes } from '../workspace/navigation.js';
+import { type Workspace } from '../workspace';
+import { type RemoteFetcher } from '../remote-fetcher';
+import { MAIN_BRANCH, makeLocalBranch, makeRemoteBranch, } from '../branches';
+import { type Differences, getDifferences } from './differences';
+import { getAllPreviousCommitsHashes } from '../workspace/navigation';
 import { BranchSynchronizer, SynchronizationState } from "./branch-synchronizer";
 
 export class BranchSynchronizerImp<TState> implements BranchSynchronizer<TState> {
