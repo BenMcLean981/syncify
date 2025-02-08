@@ -12,12 +12,14 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint src/",
+    "format": "eslint --fix . && prettier --write .",
     "check-types": "tsc --noEmit",
     "test": "vitest --run",
     "test:watch": "vitest"
   },
   "devDependencies": {
     "@syncify/eslint-config": "*",
+    "@syncify/prettier-config": "*",
     "@syncify/typescript-config": "*",
     "@types/node": "^22.12.0",
     "@types/sha1": "^1.1.5",

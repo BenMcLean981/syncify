@@ -1,0 +1,16 @@
+{
+  "name": "@syncify/prettier-config",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    "./.prettierrc": "./prettierrc.js"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2",
+    "prettier-plugin-organize-imports": "^4.1.0"
+  }
+}
