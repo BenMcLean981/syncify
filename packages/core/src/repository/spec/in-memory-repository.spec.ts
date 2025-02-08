@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
+import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 
 import { type Identifiable } from "../../id";
 import { InMemoryRepository } from "../in-memory-repository";
@@ -44,8 +44,8 @@ describe("InMemoryRepository", () => {
   });
 
   describe("get", () => {
-    it("Throws an error for not contains.", () => {
-      expect(repository.get(5)).rejects.toThrow();
+    it("Throws an error for not contains.", async () => {
+      await expect(repository.get(5)).rejects.toThrow();
     });
   });
 
@@ -59,7 +59,7 @@ describe("InMemoryRepository", () => {
     it("Throws an error for already contains.", async () => {
       await repository.add(person);
 
-      expect(repository.add(person)).rejects.toThrow();
+      await expect(repository.add(person)).rejects.toThrow();
     });
 
     it("Notifies the observer.", async () => {
@@ -80,8 +80,8 @@ describe("InMemoryRepository", () => {
       updated = { ...person, name: person.name + "-update" };
     });
 
-    it("Throws an error if not in the repository.", () => {
-      expect(repository.update(updated)).rejects.toThrow();
+    it("Throws an error if not in the repository.", async () => {
+      await expect(repository.update(updated)).rejects.toThrow();
     });
 
     it("Updates the item.", async () => {
@@ -105,8 +105,8 @@ describe("InMemoryRepository", () => {
   });
 
   describe("delete", () => {
-    it("Throws an error if not in the repository.", () => {
-      expect(repository.delete(5)).rejects.toThrow();
+    it("Throws an error if not in the repository.", async () => {
+      await expect(repository.delete(5)).rejects.toThrow();
     });
 
     it("Deletes the item.", async () => {

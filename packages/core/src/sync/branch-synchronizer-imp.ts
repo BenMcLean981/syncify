@@ -6,20 +6,18 @@ import { getAllPreviousCommitsHashes } from '../workspace/navigation';
 import { BranchSynchronizer, SynchronizationState } from "./branch-synchronizer";
 
 export class BranchSynchronizerImp<TState> implements BranchSynchronizer<TState> {
-  public async synchronize(workspace: Workspace<TState>, branchName: string): Promise<SynchronizationState<TState>> {
-    throw new Error('Method not implemented.');
+  private readonly _fetcher: RemoteFetcher<TState>
+
+  public constructor(fetcher: RemoteFetcher<TState>) {
+    this._fetcher = fetcher;
   }
-}
 
-export async function fetchAndSynchronizeBranch<TState>(
-  workspace: Workspace<TState>,
-  fetcher: RemoteFetcher<TState>,
-  branchName = MAIN_BRANCH
-): Promise<SynchronizationState<TState>> {
-  const refsUpdated = await fetch(workspace, fetcher, branchName);
-  const ready = await ensureBranchesCreated(refsUpdated, fetcher, branchName);
+  public async synchronize(workspace: Workspace<TState>, branchName: string = MAIN_BRANCH): Promise<SynchronizationState<TState>> {
+    const refsUpdated = await fetch(workspace, this._fetcher, branchName);
+    const ready = await ensureBranchesCreated(refsUpdated, this._fetcher, branchName);
 
-  return synchronizeBranch(ready, fetcher, branchName);
+    return synchronizeBranch(ready, this._fetcher, branchName);
+  }
 }
 
 async function fetch<TState>(
