@@ -1,9 +1,8 @@
 import {
-  fetchAndSynchronizeBranch,
+  type BranchSynchronizer,
   isConflict,
   MAIN_BRANCH,
   type Memento,
-  type RemoteFetcher,
   type SynchronizationState,
   type Workspace,
   WorkspaceImp,
@@ -21,16 +20,20 @@ export type InitialWorkspaceState<TState> = {
   workspace: Workspace<TState>;
 };
 
-export type FetchingWorkspaceState<TState> = {
-  status: "Fetching";
+export type DisconnectedSyncedWorkspaceState<TState> = {
+  status: "Disconnected-Synced";
 
   workspace: Workspace<TState>;
 };
 
-export type DisconnectedWorkspaceState<TState> = {
-  status: "Disconnected";
+export type DisconnectedConflictWorkspaceState<TState> = {
+  status: "Disconnected-Conflict";
 
-  workspace: Workspace<TState>;
+  local: TState;
+  remote: TState;
+
+  takeLocal(): void;
+  takeRemote(): void;
 };
 
 export type NeverConnectedWorkspaceState = {
@@ -58,14 +61,14 @@ export type ConflictWorkspaceState<TState> = {
 export type WorkspaceState<TState> =
   | LoadingWorkspaceState
   | InitialWorkspaceState<TState>
-  | FetchingWorkspaceState<TState>
-  | DisconnectedWorkspaceState<TState>
+  | DisconnectedSyncedWorkspaceState<TState>
+  | DisconnectedConflictWorkspaceState<TState>
   | NeverConnectedWorkspaceState
   | SyncedWorkspaceState<TState>
   | ConflictWorkspaceState<TState>;
 
 function getInitialStatus<TState>(
-  initial?: Workspace<TState>
+  initial?: Workspace<TState>,
 ): WorkspaceState<TState> {
   if (initial === undefined) {
     return {
@@ -81,99 +84,113 @@ function getInitialStatus<TState>(
 
 const DEFAULT_FREQUENCY = 10_000;
 
-export function useBranchSynchronizedWorkspaceState<TState extends Memento>(
-  fetcher: RemoteFetcher<TState>,
+export function useBranchSynchronizedWorkspace<TState extends Memento>(
+  synchronizer: BranchSynchronizer<TState>,
   initial?: Workspace<TState>,
   frequency = DEFAULT_FREQUENCY,
-  branchName = MAIN_BRANCH
-): WorkspaceState<TState> {
-  const fetcherRef = useRef(fetcher);
+  branchName = MAIN_BRANCH,
+): WorkspaceState<TState> & { fetching: boolean } {
+  const synchronizerRef = useRef(synchronizer);
+  const branchNameRef = useRef(branchName);
 
   if (frequency < DEFAULT_FREQUENCY) {
     throw new Error(
       `Cannot have sync frequency less than ${
         DEFAULT_FREQUENCY / 1000
-      } seconds.`
+      } seconds.`,
     );
   }
 
+  const [fetching, setFetching] = useState(false);
   const [state, setState] = useState<WorkspaceState<TState>>(
-    getInitialStatus(initial)
+    getInitialStatus(initial),
   );
 
-  const handleResult = useCallback(
-    (result: SynchronizationState<TState>) => {
-      if (isConflict(result)) {
-        const localBranch =
-          result.workspace.branches.getLocalBranch(branchName);
-        const remoteBranch =
-          result.workspace.branches.getRemoteBranch(branchName);
+  const handleResult = useCallback((result: SynchronizationState<TState>) => {
+    if (isConflict(result)) {
+      const localBranch = result.workspace.branches.getLocalBranch(
+        branchNameRef.current,
+      );
+      const remoteBranch = result.workspace.branches.getRemoteBranch(
+        branchNameRef.current,
+      );
 
-        const manipulator = new WorkspaceManipulator<TState>(result.workspace);
+      const manipulator = new WorkspaceManipulator<TState>(result.workspace);
 
-        function takeLocal() {
-          const localResult = manipulator.mergeSource(
-            remoteBranch.head,
-            branchName
-          ).workspace;
+      function takeLocal() {
+        const localResult = manipulator.mergeSource(
+          remoteBranch.head,
+          branchNameRef.current,
+        ).workspace;
 
-          setState({
-            status: "Synced",
-            workspace: localResult,
-            lastSynced: new Date(),
-          });
-        }
-
-        function takeRemote() {
-          const remoteResult = manipulator.mergeTarget(
-            remoteBranch.head,
-            branchName
-          ).workspace;
-
-          setState({
-            status: "Synced",
-            workspace: remoteResult,
-            lastSynced: new Date(),
-          });
-        }
-
-        setState({
-          status: "Conflict",
-          local: result.workspace.getState(localBranch.head),
-          remote: result.workspace.getState(remoteBranch.head),
-          takeLocal,
-          takeRemote,
-        });
-      } else {
         setState({
           status: "Synced",
-          workspace: result.workspace,
+          workspace: localResult,
           lastSynced: new Date(),
         });
       }
-    },
-    [branchName]
-  );
+
+      function takeRemote() {
+        const remoteResult = manipulator.mergeTarget(
+          remoteBranch.head,
+          branchNameRef.current,
+        ).workspace;
+
+        setState({
+          status: "Synced",
+          workspace: remoteResult,
+          lastSynced: new Date(),
+        });
+      }
+
+      setState({
+        status: "Conflict",
+        local: result.workspace.getState(localBranch.head),
+        remote: result.workspace.getState(remoteBranch.head),
+        takeLocal,
+        takeRemote,
+      });
+    } else {
+      setState({
+        status: "Synced",
+        workspace: result.workspace,
+        lastSynced: new Date(),
+      });
+    }
+  }, []);
 
   const handleFailure = useCallback((e: unknown) => {
     console.error(e);
 
-    setState({ status: "Never-Connected" });
+    setState((state) => {
+      switch (state.status) {
+        case "Never-Connected":
+        case "Loading":
+          return { status: "Never-Connected" };
+        case "Initial":
+        case "Disconnected-Synced":
+        case "Synced":
+          return { ...state, status: "Disconnected-Synced" };
+        case "Conflict":
+        case "Disconnected-Conflict":
+          return { ...state, status: "Disconnected-Conflict" };
+      }
+    });
   }, []);
 
   const synchronize = useCallback(async () => {
-    if (state.status === "Fetching") {
+    if (fetching) {
       return;
     }
 
-    fetchAndSynchronizeBranch(
-      WorkspaceImp.makeEmpty<TState>(),
-      fetcherRef.current,
-      branchName
-    )
+    setFetching(true);
+
+    synchronizerRef.current
+      .synchronize(WorkspaceImp.makeEmpty<TState>(), branchNameRef.current)
       .then(handleResult)
-      .catch(handleFailure);
-  }, [branchName, handleFailure, handleResult, state.status]);
+      .catch(handleFailure)
+      .finally(() => setFetching(false));
+  }, [handleFailure, handleResult, fetching]);
 
   useEffect(() => {
     const interval = setInterval(synchronize, frequency);
@@ -181,5 +198,5 @@ export function useBranchSynchronizedWorkspaceState<TState extends Memento>(
     return () => clearInterval(interval);
   }, [frequency, synchronize]);
 
-  return state;
+  return { ...state, fetching };
 }

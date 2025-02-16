@@ -22,23 +22,26 @@
     "test": "vitest --run",
     "test:watch": "vitest"
   },
+  "dependencies": {
+    "@syncify/core": "*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
   "devDependencies": {
     "@syncify/eslint-config": "*",
     "@syncify/typescript-config": "*",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.2.0",
     "@types/node": "^22.12.0",
-    "@types/react": "^18.3.18",
-    "@types/react-dom": "^18.3.5",
+    "@types/react": "^19.0.9",
+    "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
     "glob": "^11.0.1",
+    "jsdom": "^26.0.0",
     "tsup": "^8.3.6",
     "typescript": "5.7.3",
     "vite": "^6.1.0",
     "vite-plugin-dts": "^4.5.0",
-    "vitest": "^3.0.4"
-  },
-  "dependencies": {
-    "@syncify/core": "*",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "vitest": "^3.0.5"
   }
 }
