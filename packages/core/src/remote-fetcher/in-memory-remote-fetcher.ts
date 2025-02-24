@@ -5,7 +5,7 @@ import { type Memento } from "../memento";
 import { getAllPreviousCommitsHashes } from "../workspace/navigation";
 import { makeLocalBranch, Branch } from "../branches";
 
-export class WorkspaceBasedRemoteFetcher<TState extends Memento>
+export class InMemoryRemoteFetcher<TState extends Memento>
   implements RemoteFetcher<TState> {
   private _workspace: Workspace<TState>;
 

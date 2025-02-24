@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { getHeadHash, getHeadState, type Workspace, InMemoryWorkspace, WorkspaceManipulator, } from "../../workspace";
 import { SetCommand, TestState } from "../../test-state";
-import { WorkspaceBasedRemoteFetcher } from "../../remote-fetcher/workspace-based-remote-fetcher";
+import { InMemoryRemoteFetcher } from "../../remote-fetcher/in-memory-remote-fetcher";
 import { isConflict, isSynced, SynchronizationState, } from "../branch-synchronizer";
 import { CommandCommit, Commit } from "../../commit";
 import { MAIN_BRANCH, makeRemoteBranch } from "../../branches";
@@ -27,7 +27,7 @@ describe("BranchSynchronized", () => {
   });
 
   it("Throws an error for local branch missing.", async () => {
-    const fetcher = new WorkspaceBasedRemoteFetcher(base);
+    const fetcher = new InMemoryRemoteFetcher(base);
     const synchronizer = new BranchSynchronizerImp(fetcher);
 
     await expect(() =>
@@ -36,7 +36,7 @@ describe("BranchSynchronized", () => {
   });
 
   it("Creates a branch on the remote when missing.", async () => {
-    const fetcher = new WorkspaceBasedRemoteFetcher<TestState>();
+    const fetcher = new InMemoryRemoteFetcher<TestState>();
     const synchronizer = new BranchSynchronizerImp(fetcher);
 
     const result = await synchronizer.synchronize(base);
@@ -45,7 +45,7 @@ describe("BranchSynchronized", () => {
   });
 
   it("Does nothing when there is no difference.", async () => {
-    const fetcher = new WorkspaceBasedRemoteFetcher(ahead1);
+    const fetcher = new InMemoryRemoteFetcher(ahead1);
     const synchronizer = new BranchSynchronizerImp(fetcher);
 
     const result = await synchronizer.synchronize(ahead1);
@@ -54,7 +54,7 @@ describe("BranchSynchronized", () => {
   });
 
   it("Pushes missing commits when local ahead.", async () => {
-    const fetcher = new WorkspaceBasedRemoteFetcher(base);
+    const fetcher = new InMemoryRemoteFetcher(base);
     const synchronizer = new BranchSynchronizerImp(fetcher);
 
     const result = await synchronizer.synchronize(ahead1);
@@ -63,7 +63,7 @@ describe("BranchSynchronized", () => {
   });
 
   it("Pulls missing commits when remote ahead.", async () => {
-    const fetcher = new WorkspaceBasedRemoteFetcher(ahead1);
+    const fetcher = new InMemoryRemoteFetcher(ahead1);
     const synchronizer = new BranchSynchronizerImp(fetcher);
 
     const result = await synchronizer.synchronize(base);
@@ -72,7 +72,7 @@ describe("BranchSynchronized", () => {
   });
 
   it("Returns a merge conflict.", async () => {
-    const fetcher = new WorkspaceBasedRemoteFetcher(ahead1);
+    const fetcher = new InMemoryRemoteFetcher(ahead1);
     const synchronizer = new BranchSynchronizerImp(fetcher);
 
     const result = await synchronizer.synchronize(ahead2);
