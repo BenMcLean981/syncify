@@ -16,7 +16,7 @@ import {
   SynchronizationState,
   TestState,
   Workspace,
-  WorkspaceImp,
+  InMemoryWorkspace,
   WorkspaceManipulator,
 } from "@syncify/core";
 
@@ -46,7 +46,7 @@ describe("useBranchSynchronizedWorkspace", () => {
   });
 
   it("Starts off with initial workspace.", () => {
-    const initial = WorkspaceImp.makeEmpty();
+    const initial = InMemoryWorkspace.makeEmpty();
 
     const hook = renderHook(() =>
       useBranchSynchronizedWorkspace(new FailingSynchronizer(), initial),
@@ -74,7 +74,7 @@ describe("useBranchSynchronizedWorkspace", () => {
   });
 
   it("Goes into synchronized state.", async () => {
-    const remote = WorkspaceImp.makeNew(new TestState(4));
+    const remote = InMemoryWorkspace.makeNew(new TestState(4));
 
     const delay = 100;
 
@@ -100,7 +100,7 @@ describe("useBranchSynchronizedWorkspace", () => {
   });
 
   it("Doesn't fetch until frequency is up.", async () => {
-    const remote = WorkspaceImp.makeNew(new TestState(4));
+    const remote = InMemoryWorkspace.makeNew(new TestState(4));
 
     const delay = 100;
 
@@ -116,7 +116,7 @@ describe("useBranchSynchronizedWorkspace", () => {
   });
 
   it("Doesn't fetch a second time until frequency is up.", async () => {
-    const remote = WorkspaceImp.makeNew(new TestState(4));
+    const remote = InMemoryWorkspace.makeNew(new TestState(4));
 
     const delay = 100;
 
@@ -140,7 +140,7 @@ describe("useBranchSynchronizedWorkspace", () => {
   });
 
   it("Goes into disconnected synced state.", async () => {
-    const local = WorkspaceImp.makeNew(new TestState(4));
+    const local = InMemoryWorkspace.makeNew(new TestState(4));
 
     const hook = renderHook(() =>
       useBranchSynchronizedWorkspace(
@@ -166,7 +166,7 @@ describe("useBranchSynchronizedWorkspace", () => {
     let hook: RenderHookResult<WorkspaceState<TestState>, unknown>;
 
     beforeEach(async () => {
-      const base = WorkspaceImp.makeNew(new TestState(4));
+      const base = InMemoryWorkspace.makeNew(new TestState(4));
       const headHash = getHeadHash(base);
 
       const localCommit = new CommandCommit(headHash, new SetCommand(5));

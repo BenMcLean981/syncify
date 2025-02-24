@@ -6,12 +6,12 @@ import {
   MergeCommit,
   RevertCommit,
 } from '../commit';
-import { getHeadHash } from './workspace-imp';
 import { MAIN_BRANCH, makeLocalBranch } from '../branches';
 import { type Command } from '../command';
 import { type Memento } from '../memento';
 import { getAllPrimaryPreviousCommits } from './navigation';
 import { isOdd } from '../utils';
+import { getHeadHash } from "./utils";
 
 // TODO: Stop iterating commits iterable for performance.
 

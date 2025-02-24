@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { type Workspace, WorkspaceImp } from "../../workspace";
+import { type Workspace, InMemoryWorkspace } from "../../workspace";
 import { SetCommand, TestState } from "../../test-state";
 import { WorkspaceManipulator } from "../../workspace/workspace-manipulator";
 import { haveSameItems } from "../../utils";
@@ -12,7 +12,7 @@ describe("getAllPreviousCommits", () => {
   let ws: Workspace<TestState>;
 
   beforeEach(() => {
-    initial = WorkspaceImp.makeNew(new TestState(5));
+    initial = InMemoryWorkspace.makeNew(new TestState(5));
 
     ws = new WorkspaceManipulator(initial)
       .apply(new SetCommand(4))

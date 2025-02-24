@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { SetCommand, TestState } from "../../test-state";
-import { getHeadHash, WorkspaceImp } from "../workspace-imp";
+import { InMemoryWorkspace } from "../in-memory-workspace";
 import { CommandCommit, RevertCommit } from "../../commit";
 import { MAIN_BRANCH, makeLocalBranch } from "../../branches";
 import { WorkspaceManipulator } from "../workspace-manipulator";
+import { getHeadHash } from "../utils";
 
 describe("WorkspaceManipulator", () => {
   let manipulator: WorkspaceManipulator<TestState>;
@@ -11,7 +12,7 @@ describe("WorkspaceManipulator", () => {
   let c2: CommandCommit<TestState>;
 
   beforeEach(() => {
-    const workspace = WorkspaceImp.makeNew(new TestState(5));
+    const workspace = InMemoryWorkspace.makeNew(new TestState(5));
 
     const initialHash = workspace.branches.getLocalBranch(MAIN_BRANCH).head;
 
@@ -23,7 +24,7 @@ describe("WorkspaceManipulator", () => {
 
   describe("commit", () => {
     it("Adds the commit and updates the head.", () => {
-      const ws = WorkspaceImp.makeNew(new TestState(5));
+      const ws = InMemoryWorkspace.makeNew(new TestState(5));
 
       const local = ws.branches.getLocalBranch(MAIN_BRANCH);
 

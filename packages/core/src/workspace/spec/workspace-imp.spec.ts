@@ -1,4 +1,4 @@
-import { getHeadHash, WorkspaceImp } from "../workspace-imp";
+import { InMemoryWorkspace } from "../in-memory-workspace";
 import {
   CommandCommit,
   type Commit,
@@ -13,10 +13,11 @@ import {
 import { SetCommand, TestState } from "../../test-state";
 import { beforeEach, describe, expect, it } from "vitest";
 import { type Workspace } from "../workspace";
+import { getHeadHash } from "../utils";
 
 describe("WorkspaceImp", () => {
   it("Initializes to an empty state with a name.", () => {
-    const w = WorkspaceImp.makeNew<TestState>(new TestState(5));
+    const w = InMemoryWorkspace.makeNew<TestState>(new TestState(5));
 
     const state = w.getState(getHeadHash(w));
 
@@ -24,7 +25,7 @@ describe("WorkspaceImp", () => {
   });
 
   it("Allows the state to have commands applied.", () => {
-    let w = WorkspaceImp.makeNew(new TestState(5));
+    let w = InMemoryWorkspace.makeNew(new TestState(5));
     const commit = new CommandCommit(getHeadHash(w), new SetCommand(6));
 
     w = w
@@ -40,21 +41,21 @@ describe("WorkspaceImp", () => {
 
   describe("addCommit", () => {
     it("Throws an error for duplicate commit.", () => {
-      const w = WorkspaceImp.makeNew(new TestState(5));
+      const w = InMemoryWorkspace.makeNew(new TestState(5));
       const commit = new CommandCommit(getHeadHash(w), new SetCommand(6));
 
       expect(() => w.addCommit(commit).addCommit(commit)).toThrowError();
     });
 
     it("Throws an error for missing parent commit.", () => {
-      const workspace = WorkspaceImp.makeNew(new TestState(5));
+      const workspace = InMemoryWorkspace.makeNew(new TestState(5));
       const commit = new CommandCommit("123", new SetCommand(6));
 
       expect(() => workspace.addCommit(commit)).toThrowError();
     });
 
     it("Throws an error for duplicate initial commit.", () => {
-      const workspace = WorkspaceImp.makeNew(new TestState(5));
+      const workspace = InMemoryWorkspace.makeNew(new TestState(5));
       const commit = new InitialCommit(new TestState(6));
 
       expect(() => workspace.addCommit(commit)).toThrowError();
@@ -63,7 +64,7 @@ describe("WorkspaceImp", () => {
 
   describe("setBranches", () => {
     it("Throws an error for commit missing.", () => {
-      const workspace = WorkspaceImp.makeNew(new TestState(5));
+      const workspace = InMemoryWorkspace.makeNew(new TestState(5));
 
       expect(() =>
         workspace.setBranches(
@@ -74,7 +75,7 @@ describe("WorkspaceImp", () => {
   });
 
   it("Handles merge commits correctly.", () => {
-    const w = WorkspaceImp.makeNew(new TestState(5));
+    const w = InMemoryWorkspace.makeNew(new TestState(5));
 
     const c1 = new CommandCommit(getHeadHash(w), new SetCommand(6));
     const c2 = new CommandCommit(getHeadHash(w), new SetCommand(7));
@@ -109,7 +110,7 @@ describe("WorkspaceImp", () => {
     let commit: Commit<TestState>;
 
     beforeEach(() => {
-      empty = WorkspaceImp.makeNew(new TestState(5));
+      empty = InMemoryWorkspace.makeNew(new TestState(5));
 
       initialLocal = empty.branches.getLocalBranch(MAIN_BRANCH);
 

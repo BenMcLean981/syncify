@@ -1,20 +1,20 @@
 import { type RemoteFetcher } from "./remote-fetcher";
 import { type Commit } from "../commit";
-import { type Workspace, WorkspaceImp } from "../workspace";
+import { type Workspace, InMemoryWorkspace } from "../workspace";
 import { type Memento } from "../memento";
 import { getAllPreviousCommitsHashes } from "../workspace/navigation";
-import { makeLocalBranch, Branch } from "../branches/branches";
+import { makeLocalBranch, Branch } from "../branches";
 
 export class WorkspaceBasedRemoteFetcher<TState extends Memento>
   implements RemoteFetcher<TState> {
-  public constructor(workspace: Workspace<TState> = WorkspaceImp.makeEmpty()) {
+  private _workspace: Workspace<TState>;
+
+  public constructor(workspace: Workspace<TState> = InMemoryWorkspace.makeEmpty()) {
     this._workspace = workspace;
   }
 
-  private _workspace: Workspace<TState>;
-
   public get workspace(): Workspace<TState> {
-    return this._workspace;
+    return   this._workspace;
   }
 
   public async fetch(
@@ -37,18 +37,18 @@ export class WorkspaceBasedRemoteFetcher<TState extends Memento>
 
   public async push(
     commits: ReadonlyArray<Commit<TState>>,
-    branchName: string,
-    newHead: string
+      branchName: string,
+      newHead: string
   ): Promise<void> {
-    this.validatePush(commits, branchName, newHead);
+      this.validatePush(commits, branchName, newHead);
 
-    const newBranches = this._workspace.branches.upsertBranch(
-      makeLocalBranch(branchName, newHead)
-    );
+      const newBranches = this._workspace.branches.upsertBranch(
+        makeLocalBranch(branchName, newHead)
+      );
 
-    this._workspace = this._workspace
-      .addCommits(commits)
-      .setBranches(newBranches);
+      this._workspace = this._workspace
+        .addCommits(commits)
+        .setBranches(newBranches);
   }
 
   public async getBranch(branchName: string): Promise<Branch | undefined> {
@@ -67,10 +67,10 @@ export class WorkspaceBasedRemoteFetcher<TState extends Memento>
     const withAddition = this._workspace.addCommits(commits);
     const toRoot = getAllPreviousCommitsHashes(withAddition, newHead);
 
-    const missingBranch =
+    const hasBranch =
       this._workspace.branches.containsLocalBranch(branchName);
 
-    if (!missingBranch) {
+    if (!hasBranch) {
       return;
     }
 

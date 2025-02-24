@@ -5,7 +5,7 @@ import {
   type Memento,
   type SynchronizationState,
   type Workspace,
-  WorkspaceImp,
+  InMemoryWorkspace,
   WorkspaceManipulator,
 } from "@syncify/core";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -186,7 +186,7 @@ export function useBranchSynchronizedWorkspace<TState extends Memento>(
     setFetching(true);
 
     synchronizerRef.current
-      .synchronize(WorkspaceImp.makeEmpty<TState>(), branchNameRef.current)
+      .synchronize(InMemoryWorkspace.makeEmpty<TState>(), branchNameRef.current)
       .then(handleResult)
       .catch(handleFailure)
       .finally(() => setFetching(false));

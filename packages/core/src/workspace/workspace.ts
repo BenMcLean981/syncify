@@ -1,7 +1,7 @@
 import { type Equalable } from '../equality';
-import { type Snapshot } from '../memento/snapshot';
-import { type Commit, type CommitSnapshot } from '../commit/commit';
-import { type Branches } from '../branches/branches';
+import { type Snapshot } from '../memento';
+import { type Commit, type CommitSnapshot } from '../commit';
+import { type Branches } from '../branches';
 
 export interface Workspace<TState> extends Equalable {
   readonly id: string;
@@ -21,12 +21,4 @@ export interface Workspace<TState> extends Equalable {
   addCommits(commits: Iterable<Commit<TState>>): Workspace<TState>;
 
   setBranches(branches: Branches): Workspace<TState>;
-}
-
-export interface ClonedWorkspaceSnapshot extends Snapshot {
-  id: string;
-
-  headHash: string;
-
-  commits: ReadonlyArray<CommitSnapshot>;
 }

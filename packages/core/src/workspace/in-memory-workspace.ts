@@ -3,15 +3,10 @@ import type { Commit } from "../commit";
 import { InitialCommit } from "../commit";
 import type { Memento } from "../memento";
 import { uuid } from "../id";
-import {
-  type Branches,
-  BranchesImp,
-  MAIN_BRANCH,
-  makeLocalBranch,
-} from "../branches";
+import { type Branches, BranchesImp, MAIN_BRANCH, makeLocalBranch, } from "../branches";
 import { haveSameItems } from "../utils";
 
-export class WorkspaceImp<TState> implements Workspace<TState> {
+export class InMemoryWorkspace<TState> implements Workspace<TState> {
   private readonly _commits: Record<string, Commit<TState>>;
 
   private readonly _branches: Branches;
@@ -53,14 +48,14 @@ export class WorkspaceImp<TState> implements Workspace<TState> {
   ): Workspace<TState> {
     const initialCommit = new InitialCommit(initial);
 
-    return new WorkspaceImp(
-      WorkspaceImp.convertCommits([initialCommit]),
+    return new InMemoryWorkspace(
+      InMemoryWorkspace.convertCommits([initialCommit]),
       BranchesImp.makeNew(makeLocalBranch(MAIN_BRANCH, initialCommit.hash))
     );
   }
 
   public static makeEmpty<TState extends Memento>(): Workspace<TState> {
-    return new WorkspaceImp({}, BranchesImp.makeEmpty());
+    return new InMemoryWorkspace({}, BranchesImp.makeEmpty());
   }
 
   private static convertCommits<TState>(
@@ -105,7 +100,7 @@ export class WorkspaceImp<TState> implements Workspace<TState> {
       throw new Error("Missing parent commit.");
     }
 
-    return new WorkspaceImp(
+    return new InMemoryWorkspace(
       { ...this._commits, [commit.hash]: commit },
       this._branches,
       this._id
@@ -128,7 +123,7 @@ export class WorkspaceImp<TState> implements Workspace<TState> {
       }
     });
 
-    return new WorkspaceImp(this._commits, branches, this._id);
+    return new InMemoryWorkspace(this._commits, branches, this._id);
   }
 
   public getState(hash: string): TState {
@@ -138,7 +133,7 @@ export class WorkspaceImp<TState> implements Workspace<TState> {
   }
 
   public equals(other: unknown): boolean {
-    if (other instanceof WorkspaceImp) {
+    if (other instanceof InMemoryWorkspace) {
       return (
         haveSameItems(
           Object.values(this._commits),
@@ -152,25 +147,3 @@ export class WorkspaceImp<TState> implements Workspace<TState> {
   }
 }
 
-export function getHead<TState>(
-  workspace: Workspace<TState>,
-  branchName = MAIN_BRANCH
-): Commit<TState> {
-  return workspace.getCommit(getHeadHash(workspace, branchName));
-}
-
-export function getHeadHash(
-  workspace: Workspace<unknown>,
-  branchName = MAIN_BRANCH
-) {
-  return workspace.branches.getLocalBranch(branchName).head;
-}
-
-export function getHeadState<TState>(
-  workspace: Workspace<TState>,
-  branchName = MAIN_BRANCH
-): TState {
-  const headHash = getHeadHash(workspace, branchName);
-
-  return workspace.getState(headHash);
-}

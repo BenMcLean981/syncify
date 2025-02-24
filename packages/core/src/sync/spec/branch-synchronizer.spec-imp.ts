@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { getHeadHash, getHeadState, type Workspace, WorkspaceImp, WorkspaceManipulator, } from "../../workspace";
+import { getHeadHash, getHeadState, type Workspace, InMemoryWorkspace, WorkspaceManipulator, } from "../../workspace";
 import { SetCommand, TestState } from "../../test-state";
 import { WorkspaceBasedRemoteFetcher } from "../../remote-fetcher/workspace-based-remote-fetcher";
 import { isConflict, isSynced, SynchronizationState, } from "../branch-synchronizer";
@@ -17,7 +17,7 @@ describe("BranchSynchronized", () => {
   let ahead2: Workspace<TestState>;
 
   beforeEach(() => {
-    base = WorkspaceImp.makeNew(new TestState(5));
+    base = InMemoryWorkspace.makeNew(new TestState(5));
 
     c1 = new CommandCommit(getHeadHash(base), new SetCommand(6));
     c2 = new CommandCommit(getHeadHash(base), new SetCommand(7));
