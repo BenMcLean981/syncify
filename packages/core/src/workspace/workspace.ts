@@ -1,7 +1,6 @@
-import { type Equalable } from '../equality';
-import { type Snapshot } from '../memento';
-import { type Commit, type CommitSnapshot } from '../commit';
 import { type Branches } from '../branches';
+import { type Commit } from '../commit';
+import { type Equalable } from '../equality';
 
 export interface Workspace<TState> extends Equalable {
   readonly id: string;

@@ -7,7 +7,7 @@
     "access": "public"
   },
   "exports": {
-    "./.prettierrc": "./prettierrc.js"
+    "./.prettierrc": "./.prettierrc.js"
   },
   "devDependencies": {
     "prettier": "^3.4.2",

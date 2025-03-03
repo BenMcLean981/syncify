@@ -1,45 +1,120 @@
-import { type Workspace } from '../workspace';
+import { MAIN_BRANCH, makeLocalBranch, makeRemoteBranch } from '../branches';
+import { CommandRestorer, StateRestorer } from '../commit';
+import { restoreCommit } from '../commit/utils';
+import { Memento } from '../memento';
 import { type RemoteFetcher } from '../remote-fetcher';
-import { MAIN_BRANCH, makeLocalBranch, makeRemoteBranch, } from '../branches';
-import { type Differences, getDifferences } from './differences';
+import { type Workspace } from '../workspace';
 import { getAllPreviousCommitsHashes } from '../workspace/navigation';
-import { BranchSynchronizer, SynchronizationState } from "./branch-synchronizer";
+import {
+  BranchSynchronizer,
+  SynchronizationState,
+} from './branch-synchronizer';
+import { type Differences, getDifferences } from './differences';
 
-export class BranchSynchronizerImp<TState> implements BranchSynchronizer<TState> {
-  private readonly _fetcher: RemoteFetcher<TState>
+export class BranchSynchronizerImp<TState extends Memento>
+  implements BranchSynchronizer<TState>
+{
+  private readonly _fetcher: RemoteFetcher;
 
-  public constructor(fetcher: RemoteFetcher<TState>) {
+  private readonly _commandRestorer: CommandRestorer<TState>;
+
+  private readonly _stateRestorer: StateRestorer<TState>;
+
+  public constructor(
+    fetcher: RemoteFetcher,
+    commandRestorer: CommandRestorer<TState>,
+    stateRestorer: StateRestorer<TState>
+  ) {
     this._fetcher = fetcher;
+    this._commandRestorer = commandRestorer;
+    this._stateRestorer = stateRestorer;
   }
 
-  public async synchronize(workspace: Workspace<TState>, branchName: string = MAIN_BRANCH): Promise<SynchronizationState<TState>> {
-    const refsUpdated = await fetch(workspace, this._fetcher, branchName);
-    const ready = await ensureBranchesCreated(refsUpdated, this._fetcher, branchName);
+  public async synchronize(
+    workspace: Workspace<TState>,
+    branchName: string = MAIN_BRANCH
+  ): Promise<SynchronizationState<TState>> {
+    const refsUpdated = await this.fetch(workspace, branchName);
+    const ready = await this.ensureBranchesCreated(refsUpdated, branchName);
 
-    return synchronizeBranch(ready, this._fetcher, branchName);
+    return this.synchronizeBranch(ready, branchName);
   }
-}
 
-async function fetch<TState>(
-  workspace: Workspace<TState>,
-  fetcher: RemoteFetcher<TState>,
-  branchName: string
-) {
-  const remoteBranch = await fetcher.getBranch(branchName);
+  private async fetch(workspace: Workspace<TState>, branchName: string) {
+    const remoteBranch = await this._fetcher.getBranch(branchName);
 
-  if (remoteBranch === undefined) {
-    return workspace;
-  } else {
-    const latestHash = getHashToFetchFrom(workspace, branchName);
-    const remoteAfter = await fetcher.fetch(branchName, latestHash);
+    if (remoteBranch === undefined) {
+      return workspace;
+    } else {
+      const latestHash = getHashToFetchFrom(workspace, branchName);
+      const remoteAfter = await this._fetcher.fetch(branchName, latestHash);
 
-    const newBranches = workspace.branches.upsertBranch(
-      makeRemoteBranch(branchName, remoteBranch.head)
-    );
+      const newBranches = workspace.branches.upsertBranch(
+        makeRemoteBranch(branchName, remoteBranch.head)
+      );
 
-    const toAdd = remoteAfter.filter((c) => !workspace.hasCommit(c.hash));
+      const toAdd = remoteAfter
+        .filter((c) => !workspace.hasCommit(c.hash))
+        .map((c) =>
+          restoreCommit(c, this._commandRestorer, this._stateRestorer)
+        );
 
-    return workspace.addCommits(toAdd).setBranches(newBranches);
+      return workspace.addCommits(toAdd).setBranches(newBranches);
+    }
+  }
+
+  private async ensureBranchesCreated<TState>(
+    workspace: Workspace<TState>,
+    branchName: string
+  ): Promise<Workspace<TState>> {
+    if (!workspace.branches.containsLocalBranch(branchName)) {
+      // TODO: Support creating new branches.
+
+      throw new Error(`Missing local branch "${branchName}"`);
+    } else if (!workspace.branches.containsRemoteBranch(branchName)) {
+      const local = workspace.branches.getLocalBranch(branchName);
+      const hashes = getAllPreviousCommitsHashes(workspace, local.head);
+      const commits = [...hashes]
+        .map((h) => workspace.getCommit(h))
+        .map((c) => c.getSnapshot());
+
+      await this._fetcher.push(commits, branchName, local.head);
+
+      return workspace.setBranches(
+        workspace.branches.upsertBranch(
+          makeRemoteBranch(branchName, local.head)
+        )
+      );
+    } else {
+      return workspace;
+    }
+  }
+
+  async synchronizeBranch<TState>(
+    workspace: Workspace<TState>,
+    branchName: string
+  ): Promise<SynchronizationState<TState>> {
+    const differences = getDifferences(workspace, branchName);
+
+    if (isRemoteAhead(differences)) {
+      return {
+        status: 'Synced',
+        workspace: fastForward(workspace, branchName),
+      };
+    } else if (isLocalAhead(differences)) {
+      return {
+        status: 'Synced',
+        workspace: await push(workspace, this._fetcher, branchName),
+      };
+    } else if (noDifference(differences)) {
+      return { status: 'Synced', workspace };
+    } else if (isInConflict(differences)) {
+      return { status: 'Conflict', workspace };
+    } else {
+      // Will never happen.
+
+      throw new Error('Something went wrong, invalid differences.');
+    }
   }
 }
 
@@ -51,58 +126,6 @@ function getHashToFetchFrom(
     return workspace.branches.getRemoteBranch(branchName).head;
   } else {
     return workspace.initialHash;
-  }
-}
-
-async function ensureBranchesCreated<TState>(
-  workspace: Workspace<TState>,
-  fetcher: RemoteFetcher<TState>,
-  branchName: string
-): Promise<Workspace<TState>> {
-  if (!workspace.branches.containsLocalBranch(branchName)) {
-    // TODO: Support creating new branches.
-
-    throw new Error(`Missing local branch "${branchName}"`);
-  } else if (!workspace.branches.containsRemoteBranch(branchName)) {
-    const local = workspace.branches.getLocalBranch(branchName);
-    const hashes = getAllPreviousCommitsHashes(workspace, local.head);
-    const commits = [...hashes].map((h) => workspace.getCommit(h));
-
-    await fetcher.push(commits, branchName, local.head);
-
-    return workspace.setBranches(
-      workspace.branches.upsertBranch(makeRemoteBranch(branchName, local.head))
-    );
-  } else {
-    return workspace;
-  }
-}
-
-async function synchronizeBranch<TState>(
-  workspace: Workspace<TState>,
-  fetcher: RemoteFetcher<TState>,
-  branchName: string
-): Promise<SynchronizationState<TState>> {
-  const differences = getDifferences(workspace, branchName);
-
-  if (isRemoteAhead(differences)) {
-    return {
-      status: 'Synced',
-      workspace: fastForward(workspace, branchName),
-    };
-  } else if (isLocalAhead(differences)) {
-    return {
-      status: 'Synced',
-      workspace: await push(workspace, fetcher, branchName),
-    };
-  } else if (noDifference(differences)) {
-    return { status: 'Synced', workspace };
-  } else if (isInConflict(differences)) {
-    return { status: 'Conflict', workspace };
-  } else {
-    // Will never happen.
-
-    throw new Error('Something went wrong, invalid differences.');
   }
 }
 
@@ -154,7 +177,7 @@ function fastForward<TState>(
 
 async function push<TState>(
   workspace: Workspace<TState>,
-  fetcher: RemoteFetcher<TState>,
+  fetcher: RemoteFetcher,
   branchName: string
 ) {
   const differences = getDifferences(workspace, branchName);
@@ -164,9 +187,9 @@ async function push<TState>(
   }
 
   const local = workspace.branches.getLocalBranch(branchName);
-  const commits = [...differences.localDifference].map((hash) =>
-    workspace.getCommit(hash)
-  );
+  const commits = [...differences.localDifference]
+    .map((hash) => workspace.getCommit(hash))
+    .map((c) => c.getSnapshot());
 
   await fetcher.push(commits, branchName, local.head);
 

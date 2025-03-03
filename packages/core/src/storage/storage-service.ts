@@ -1,7 +1,7 @@
-import { CommitSnapshot } from '../commit';
-import { type Branch } from '../branches';
+import type { Branch } from '../branches';
+import type { CommitSnapshot } from '../commit';
 
-export interface RemoteFetcher {
+export interface StorageService {
   /**
    * Fetch the commits ahead of the given hash.
    *

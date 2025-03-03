@@ -1,32 +1,38 @@
-import { TestState } from './test-state';
-import { type Command } from '../command';
-import { type Snapshot } from '../memento';
+import { type Command } from '../command'
+import { type Snapshot } from '../memento'
+import { TestState } from './test-state'
 
 export class SetCommand implements Command<TestState> {
-  private readonly _value: number;
+  private readonly _value: number
 
   public constructor(value: number) {
-    this._value = value;
+    this._value = value
   }
 
   public static makeFromSnapshot(snapshot: SetCommandSnapshot): SetCommand {
-    return new SetCommand(snapshot.value);
+    return new SetCommand(snapshot.value)
   }
 
   public apply(): TestState {
-    return new TestState(this._value);
+    return new TestState(this._value)
   }
 
   public getSnapshot(): SetCommandSnapshot {
     return {
       type: 'Set-Command',
       value: this._value,
-    };
+    }
   }
 }
 
-interface SetCommandSnapshot extends Snapshot {
-  type: 'Set-Command';
+export interface SetCommandSnapshot extends Snapshot {
+  type: 'Set-Command'
 
-  value: number;
+  value: number
+}
+
+export function isSetCommandSnapshot(
+  snapshot: Snapshot
+): snapshot is SetCommandSnapshot {
+  return 'type' in snapshot && snapshot.type === 'Set'
 }

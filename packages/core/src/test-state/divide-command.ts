@@ -1,34 +1,40 @@
-import { TestState } from './test-state';
-import { type Command } from '../command';
-import { type Snapshot } from '../memento';
+import { type Command } from '../command'
+import { type Snapshot } from '../memento'
+import { TestState } from './test-state'
 
 export class DivideCommand implements Command<TestState> {
-  private readonly _value: number;
+  private readonly _value: number
 
   public constructor(value: number) {
-    this._value = value;
+    this._value = value
   }
 
   public static makeFromSnapshot(
     snapshot: DivideCommandSnapshot
   ): DivideCommand {
-    return new DivideCommand(snapshot.value);
+    return new DivideCommand(snapshot.value)
   }
 
   public apply(state: TestState): TestState {
-    return new TestState(state.value / this._value);
+    return new TestState(state.value / this._value)
   }
 
   public getSnapshot(): DivideCommandSnapshot {
     return {
-      type: 'Divide-Command',
+      type: 'Divide',
       value: this._value,
-    };
+    }
   }
 }
 
-interface DivideCommandSnapshot extends Snapshot {
-  type: 'Divide-Command';
+export interface DivideCommandSnapshot extends Snapshot {
+  type: 'Divide'
 
-  value: number;
+  value: number
+}
+
+export function isDivideCommandSnapshot(
+  snapshot: Snapshot
+): snapshot is DivideCommandSnapshot {
+  return 'type' in snapshot && snapshot.type === 'Divide'
 }

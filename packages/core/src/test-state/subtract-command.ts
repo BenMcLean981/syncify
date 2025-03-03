@@ -1,34 +1,40 @@
-import { TestState } from './test-state';
-import { type Command } from '../command';
-import { type Snapshot } from '../memento';
+import { type Command } from '../command'
+import { type Snapshot } from '../memento'
+import { TestState } from './test-state'
 
 export class SubtractCommand implements Command<TestState> {
-  private readonly _value: number;
+  private readonly _value: number
 
   public constructor(value: number) {
-    this._value = value;
+    this._value = value
   }
 
   public static makeFromSnapshot(
     snapshot: SubtractCommandSnapshot
   ): SubtractCommand {
-    return new SubtractCommand(snapshot.value);
+    return new SubtractCommand(snapshot.value)
   }
 
   public apply(state: TestState): TestState {
-    return new TestState(state.value - this._value);
+    return new TestState(state.value - this._value)
   }
 
   public getSnapshot(): SubtractCommandSnapshot {
     return {
-      type: 'Subtract-Command',
+      type: 'Subtract',
       value: this._value,
-    };
+    }
   }
 }
 
-interface SubtractCommandSnapshot extends Snapshot {
-  type: 'Subtract-Command';
+export interface SubtractCommandSnapshot extends Snapshot {
+  type: 'Subtract'
 
-  value: number;
+  value: number
+}
+
+export function isSubtractCommandSnapshot(
+  snapshot: Snapshot
+): snapshot is SubtractCommandSnapshot {
+  return 'type' in snapshot && snapshot.type === 'Subtract'
 }

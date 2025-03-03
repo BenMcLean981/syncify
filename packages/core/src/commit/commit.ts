@@ -1,7 +1,7 @@
-import type { Snapshot } from '../memento/snapshot.ts';
+import type { Memento, Snapshot } from '../memento';
 import { type Workspace } from '../workspace';
 
-export interface Commit<TState> {
+export interface Commit<TState> extends Memento {
   readonly hash: string;
 
   readonly parents: Set<string>;
@@ -11,6 +11,8 @@ export interface Commit<TState> {
   apply(context: Workspace<TState>): TState;
 
   revert(context: Workspace<TState>): TState;
+
+  getSnapshot(): CommitSnapshot;
 }
 
 export interface CommitSnapshot extends Snapshot {
