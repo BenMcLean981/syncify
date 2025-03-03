@@ -1,10 +1,15 @@
-import type { Workspace } from "./workspace";
-import type { Commit } from "../commit";
-import { InitialCommit } from "../commit";
-import type { Memento } from "../memento";
-import { uuid } from "../id";
-import { type Branches, BranchesImp, MAIN_BRANCH, makeLocalBranch, } from "../branches";
-import { haveSameItems } from "../utils";
+import {
+  type Branches,
+  BranchesImp,
+  MAIN_BRANCH,
+  makeLocalBranch,
+} from '../branches';
+import type { Commit } from '../commit';
+import { InitialCommit } from '../commit';
+import { generateUUID } from '../id';
+import type { Memento } from '../memento';
+import { haveSameItems } from '../utils';
+import type { Workspace } from './workspace';
 
 export class InMemoryWorkspace<TState> implements Workspace<TState> {
   private readonly _commits: Record<string, Commit<TState>>;
@@ -16,7 +21,7 @@ export class InMemoryWorkspace<TState> implements Workspace<TState> {
   private constructor(
     commits: Record<string, Commit<TState>>,
     branches: Branches,
-    id: string = uuid()
+    id: string = generateUUID()
   ) {
     this._commits = commits;
     this._branches = branches;
@@ -37,7 +42,7 @@ export class InMemoryWorkspace<TState> implements Workspace<TState> {
     );
 
     if (initialCommit === undefined) {
-      throw new Error("No initial commit.");
+      throw new Error('No initial commit.');
     }
 
     return initialCommit.hash;
@@ -86,18 +91,18 @@ export class InMemoryWorkspace<TState> implements Workspace<TState> {
 
   public addCommit(commit: Commit<TState>): Workspace<TState> {
     if (commit.hash in this._commits) {
-      throw new Error("Commit already in workspace.");
+      throw new Error('Commit already in workspace.');
     }
 
     const hasCommits = Object.keys(this._commits).length !== 0;
     const isInitialCommit = commit.parents.size === 0;
 
     if (isInitialCommit && hasCommits) {
-      throw new Error("Cannot add dangling commit.");
+      throw new Error('Cannot add dangling commit.');
     }
 
     if ([...commit.parents].some((parentHash) => !this.hasCommit(parentHash))) {
-      throw new Error("Missing parent commit.");
+      throw new Error('Missing parent commit.');
     }
 
     return new InMemoryWorkspace(
@@ -146,4 +151,3 @@ export class InMemoryWorkspace<TState> implements Workspace<TState> {
     }
   }
 }
-
