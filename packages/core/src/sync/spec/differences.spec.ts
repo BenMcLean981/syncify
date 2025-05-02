@@ -1,12 +1,12 @@
-import { beforeEach, describe, expect, it } from "vitest";
-import { type Workspace, InMemoryWorkspace } from "../../workspace";
-import { SetCommand, TestState } from "../../test-state";
-import { WorkspaceManipulator } from "../../workspace/workspace-manipulator";
-import { haveSameItems } from "../../utils";
-import { getAllPreviousCommitsHashes } from "../../workspace/navigation";
-import { MAIN_BRANCH } from "../../branches";
+import { beforeEach, describe, expect, it } from 'vitest';
+import { MAIN_BRANCH } from '../../branches';
+import { SetCommand, TestState } from '../../test-state';
+import { haveSameItems } from '../../utils';
+import { type Workspace, InMemoryWorkspace } from '../../workspace';
+import { getAllPreviousCommitsHashes } from '../../workspace/navigation';
+import { WorkspaceManipulator } from '../../workspace/workspace-manipulator';
 
-describe("getAllPreviousCommits", () => {
+describe('getAllPreviousCommits', () => {
   let initial: Workspace<TestState>;
 
   let ws: Workspace<TestState>;
@@ -19,7 +19,7 @@ describe("getAllPreviousCommits", () => {
       .apply(new SetCommand(8)).workspace;
   });
 
-  it("Goes to root.", () => {
+  it('Goes to root.', () => {
     const hash = ws.branches.getLocalBranch(MAIN_BRANCH).head;
     const head = ws.getCommit(hash);
     const c1 = ws.getCommit([...head.parents][0]);
@@ -31,7 +31,7 @@ describe("getAllPreviousCommits", () => {
     expect(haveSameItems(actual, expected)).toBe(true);
   });
 
-  it("Stops to before commit.", () => {
+  it('Stops to before commit.', () => {
     const hash = ws.branches.getLocalBranch(MAIN_BRANCH).head;
     const head = ws.getCommit(hash);
     const c1 = ws.getCommit([...head.parents][0]);
@@ -47,7 +47,7 @@ describe("getAllPreviousCommits", () => {
     expect(haveSameItems(actual, expected)).toBe(true);
   });
 
-  it("Excludes stop commit if its head.", () => {
+  it('Excludes stop commit if its head.', () => {
     const hash = ws.branches.getLocalBranch(MAIN_BRANCH).head;
     const head = ws.getCommit(hash);
 

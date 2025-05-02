@@ -4,15 +4,17 @@
   "type": "module",
   "private": true,
   "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.cts",
-  "files": [
-    "dist/**"
-  ],
   "exports": {
-    ".": "./src/index.ts"
+    "development": "./src/index.ts",
+    "types": "./dist/index.d.ts",
+    "import": "./dist/index.js",
+    "require": "./dist/index.cjs"
   },
+  "files": ["dist"],
   "scripts": {
-    "build": "vite build",
+    "build": "tsup",
     "lint": "eslint src/",
     "format": "eslint --fix . && prettier --write .",
     "check-types": "tsc --noEmit",

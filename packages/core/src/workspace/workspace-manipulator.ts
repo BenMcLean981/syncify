@@ -1,4 +1,5 @@
-import { type Workspace } from './workspace';
+import { MAIN_BRANCH, makeLocalBranch } from '../branches';
+import { type Command } from '../command';
 import {
   CommandCommit,
   type Commit,
@@ -6,12 +7,10 @@ import {
   MergeCommit,
   RevertCommit,
 } from '../commit';
-import { MAIN_BRANCH, makeLocalBranch } from '../branches';
-import { type Command } from '../command';
 import { type Memento } from '../memento';
-import { getAllPrimaryPreviousCommits } from './navigation';
 import { isOdd } from '../utils';
-import { getHeadHash } from "./utils";
+import { getHeadHash } from './utils';
+import { type Workspace } from './workspace';
 
 // TODO: Stop iterating commits iterable for performance.
 
@@ -212,4 +211,37 @@ export class WorkspaceManipulator<TState extends Memento> {
       return false;
     }
   }
+}
+
+function getAllPrimaryPreviousCommits<TState>(
+  workspace: Workspace<TState>,
+  hash: string,
+  stop?: (c: Commit<TState>) => boolean
+): Iterable<Commit<TState>> {
+  const hashes = getAllPrimaryPreviousCommitHashes(workspace, hash, stop);
+
+  return hashes.map((h) => workspace.getCommit(h));
+}
+
+function getAllPrimaryPreviousCommitHashes<TState>(
+  workspace: Workspace<TState>,
+  hash: string,
+  stop?: (c: Commit<TState>) => boolean
+): ReadonlyArray<string> {
+  let commit = workspace.getCommit(hash);
+
+  const result: Array<string> = [];
+
+  while (!stop?.(commit)) {
+    result.push(commit.hash);
+
+    // Initial commit.
+    if (commit.primaryParent === null) {
+      break;
+    }
+
+    commit = workspace.getCommit(commit.primaryParent);
+  }
+
+  return result;
 }

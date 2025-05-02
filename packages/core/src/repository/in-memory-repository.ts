@@ -4,7 +4,8 @@ import { SubjectImp } from '../observer';
 import { type ObservableRepository } from './observable-repository';
 
 export class InMemoryRepository<T extends Identifiable>
-  implements ObservableRepository<T> {
+  implements ObservableRepository<T>
+{
   private readonly _items: Record<ID, T> = {};
 
   private readonly _onAdd = new SubjectImp<T>();
@@ -12,6 +13,16 @@ export class InMemoryRepository<T extends Identifiable>
   private readonly _onUpdate = new SubjectImp<T>();
 
   private readonly _onDelete = new SubjectImp<T>();
+
+  public constructor(items: Iterable<T>) {
+    for (const item of items) {
+      if (item.id in this._items) {
+        throw new Error(`Multiple items with id "${item.id}."`);
+      }
+
+      this._items[item.id] = item;
+    }
+  }
 
   public get onAdd(): Subject<T> {
     return this._onAdd;

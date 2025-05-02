@@ -30,5 +30,5 @@ export default defineConfig({
       },
     },
   },
-  plugins: [dts({ tsconfigPath: './tsconfig.json' }), nodePolyfills()],
+  plugins: [dts({ tsconfigPath: './tsconfig.json.json' }), nodePolyfills()],
 });

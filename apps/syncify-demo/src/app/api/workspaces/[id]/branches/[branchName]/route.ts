@@ -1,18 +1,21 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getBranch, getBranches } from "@/utils/branches";
+import { getBranch } from '@/utils/branches';
+import { NextRequest, NextResponse } from 'next/server';
 
-type GetProps = {
-  params: {
-    id: string;
-    branchName: string;
-  };
+type Params = {
+  id: string;
+  branchName: string;
+};
+type Props = {
+  params: Promise<Params>;
 };
 
 export async function GET(
   request: NextRequest,
-  props: GetProps,
+  props: Props
 ): Promise<NextResponse> {
-  const branch = getBranch(props.params.id, props.params.branchName);
+  const params = await props.params;
+
+  const branch = getBranch(params.id, params.branchName);
 
   return NextResponse.json({ branch });
 }

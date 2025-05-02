@@ -85,6 +85,10 @@ export class InMemoryWorkspace<TState> implements Workspace<TState> {
     return commit;
   }
 
+  public getAllCommits(): Iterable<Commit<TState>> {
+    return Object.values(this._commits);
+  }
+
   public hasCommit(hash: string): boolean {
     return hash in this._commits;
   }

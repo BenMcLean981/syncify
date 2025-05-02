@@ -15,6 +15,8 @@ export interface Workspace<TState> extends Equalable {
 
   getCommit(hash: string): Commit<TState>;
 
+  getAllCommits(): Iterable<Commit<TState>>;
+
   addCommit(commit: Commit<TState>): Workspace<TState>;
 
   addCommits(commits: Iterable<Commit<TState>>): Workspace<TState>;
