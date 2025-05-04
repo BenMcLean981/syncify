@@ -20,6 +20,14 @@ export class DiskSnapshotRepository<TSnapshot extends Snapshot & Identifiable>
     }
   }
 
+  public async getAll(): Promise<ReadonlyArray<TSnapshot>> {
+    const ids = await fs.promises.readdir(this._rootPath, {
+      withFileTypes: false,
+    });
+
+    return Promise.all(ids.map((id) => this.get(id)));
+  }
+
   public async get(id: ID): Promise<TSnapshot> {
     if (!(await this.contains(id))) {
       throw new Error(`No entry with id "${id}".`);

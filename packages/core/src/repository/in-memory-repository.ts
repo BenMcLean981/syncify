@@ -40,6 +40,10 @@ export class InMemoryRepository<T extends Identifiable>
     return id in this._items;
   }
 
+  public async getAll(): Promise<ReadonlyArray<T>> {
+    return Object.values(this._items);
+  }
+
   public async get(id: ID): Promise<T> {
     if (!(await this.contains(id))) {
       throw new Error(`No item with id "${id}" in repository.`);
