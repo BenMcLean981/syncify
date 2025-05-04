@@ -16,7 +16,7 @@ import {
 } from '../storage-service/storage-service';
 import { type RemoteFetcher } from './remote-fetcher';
 
-export class InMemoryRemoteFetcher<TState extends Memento>
+export class StorageServiceBasedRemoteFetcher<TState extends Memento>
   implements RemoteFetcher
 {
   private _storageService: StorageService;
@@ -39,11 +39,14 @@ export class InMemoryRemoteFetcher<TState extends Memento>
     branchName: string,
     from: string
   ): Promise<ReadonlyArray<CommitSnapshot>> {
-    if (!(await this._storageService.hasCommit(from))) {
+    if (!(await this.containsCommit(from))) {
       return [];
     }
 
-    const local = await this._storageService.getBranch(branchName);
+    const local = await this._storageService.localBranches.get(
+      getLocalBranchId(branchName)
+    );
+
     const hashes = await this.fetchAllPreviousCommitsHashes(
       local.head,
       (c) => c.hash === from
@@ -89,6 +92,12 @@ export class InMemoryRemoteFetcher<TState extends Memento>
   private async containsBranch(branchName: string) {
     return await this._storageService.localBranches.contains(
       getLocalBranchId(branchName)
+    );
+  }
+
+  private async containsCommit(hash: string) {
+    return await this._storageService.commits.contains(
+      getCommitIdFromHash(hash)
     );
   }
 

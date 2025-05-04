@@ -1,5 +1,5 @@
-import { getBranch } from '@/utils/branches';
 import { NextRequest, NextResponse } from 'next/server';
+import { getBranch } from '../../../../../utils/branches';
 
 type Params = {
   id: string;

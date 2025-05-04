@@ -1,4 +1,4 @@
-import { Branch, LocalBranch } from '../branches';
+import { LocalBranch } from '../branches';
 import { CommitSnapshot } from '../commit';
 import { hashAsUUID, ID, Identifiable } from '../id';
 import { Repository } from '../repository';
@@ -7,10 +7,6 @@ export interface StorageService {
   readonly commits: Repository<StoredCommitSnapshot>;
 
   readonly localBranches: Repository<StoredLocalBranch>;
-
-  hasCommit(hash: string): Promise<boolean>;
-
-  getBranch(name: string): Promise<Branch>;
 }
 
 export type StoredCommitSnapshot = CommitSnapshot & Identifiable;
