@@ -1,4 +1,4 @@
-import { StoredLocalBranch } from '@syncify/core';
+import { StoredCommitSnapshot } from '@syncify/core';
 import { NextRequest, NextResponse } from 'next/server';
 import { DiskStorageSystem } from '../disk-storage-system';
 
@@ -18,7 +18,7 @@ export async function GET(
 
   const storageSystem = new DiskStorageSystem(params.id);
 
-  const branches = storageSystem.localBranches.getAll();
+  const branches = storageSystem.commits.getAll();
 
   return NextResponse.json({ branches });
 }
@@ -30,11 +30,11 @@ export async function POST(
 ): Promise<NextResponse> {
   const params = await props.params;
 
-  const data = (await request.json()) as { branch: StoredLocalBranch };
+  const data = (await request.json()) as { commit: StoredCommitSnapshot };
 
   const storageSystem = new DiskStorageSystem(params.id);
 
-  await storageSystem.localBranches.add(data.branch);
+  await storageSystem.commits.add(data.commit);
 
   return NextResponse.json({ success: true });
 }
@@ -46,11 +46,11 @@ export async function PATCH(
 ): Promise<NextResponse> {
   const params = await props.params;
 
-  const data = (await request.json()) as { branch: StoredLocalBranch };
+  const data = (await request.json()) as { commit: StoredCommitSnapshot };
 
   const storageSystem = new DiskStorageSystem(params.id);
 
-  await storageSystem.localBranches.update(data.branch);
+  await storageSystem.commits.update(data.commit);
 
   return NextResponse.json({ success: true });
 }
