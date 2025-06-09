@@ -19,14 +19,14 @@ export class SetCommand implements Command<TestState> {
 
   public getSnapshot(): SetCommandSnapshot {
     return {
-      type: 'Set-Command',
+      type: 'Set',
       value: this._value,
     }
   }
 }
 
 export interface SetCommandSnapshot extends Snapshot {
-  type: 'Set-Command'
+  type: 'Set'
 
   value: number
 }

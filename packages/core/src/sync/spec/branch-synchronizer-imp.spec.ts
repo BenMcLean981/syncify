@@ -22,7 +22,7 @@ import {
 } from '../branch-synchronizer';
 import { BranchSynchronizerImp } from '../branch-synchronizer-imp';
 
-describe('BranchSynchronized', () => {
+describe('BranchSynchronizerImp', () => {
   let base: Workspace<TestState>;
 
   let c1: Commit<TestState>;

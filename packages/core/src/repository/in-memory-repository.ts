@@ -14,7 +14,7 @@ export class InMemoryRepository<T extends Identifiable>
 
   private readonly _onDelete = new SubjectImp<T>();
 
-  public constructor(items: Iterable<T>) {
+  public constructor(items: Iterable<T> = []) {
     for (const item of items) {
       if (item.id in this._items) {
         throw new Error(`Multiple items with id "${item.id}."`);
