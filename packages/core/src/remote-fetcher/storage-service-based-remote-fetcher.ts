@@ -13,7 +13,7 @@ import {
   makeStoredCommitSnapshot,
   makeStoredLocalBranch,
   StorageService,
-} from '../storage-service/storage-service';
+} from '../storage-service';
 import { type RemoteFetcher } from './remote-fetcher';
 
 export class StorageServiceBasedRemoteFetcher<TState extends Memento>
@@ -68,7 +68,7 @@ export class StorageServiceBasedRemoteFetcher<TState extends Memento>
       restoreCommit(c, this._commandRestorer, this._stateRestorer)
     );
 
-    this.validatePush(commits, branchName, newHead);
+    await this.validatePush(commits, branchName, newHead);
 
     for (const c of commits) {
       await this._storageService.commits.add(

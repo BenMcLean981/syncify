@@ -17,6 +17,32 @@ export function getDifferences<TState>(
   workspace: Workspace<TState>,
   branchName: string
 ): Differences {
+  if (
+    !workspace.branches.containsLocalBranch(branchName) &&
+    !workspace.branches.containsRemoteBranch(branchName)
+  ) {
+    throw new Error('Branch missing!');
+  }
+
+  if (!workspace.branches.containsLocalBranch(branchName)) {
+    const remoteBranch = workspace.branches.getRemoteBranch(branchName);
+
+    return {
+      localDifference: new Set(),
+      remoteDifference: getAllPreviousCommitsHashes(
+        workspace,
+        remoteBranch.head
+      ),
+    };
+  } else if (!workspace.branches.containsRemoteBranch(branchName)) {
+    const localBranch = workspace.branches.getLocalBranch(branchName);
+
+    return {
+      localDifference: getAllPreviousCommitsHashes(workspace, localBranch.head),
+      remoteDifference: new Set(),
+    };
+  }
+
   const localBranch = workspace.branches.getLocalBranch(branchName);
   const remoteBranch = workspace.branches.getRemoteBranch(branchName);
 

@@ -7,6 +7,7 @@ import {
   type Workspace,
   InMemoryWorkspace,
   WorkspaceManipulator,
+  Command,
 } from "@syncify/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -44,6 +45,10 @@ export type SyncedWorkspaceState<TState> = {
   status: "Synced";
 
   workspace: Workspace<TState>;
+
+  apply(command: Command<TState>): void;
+  undo(): void;
+  redo(): void;
 
   lastSynced: Date;
 };
@@ -93,12 +98,8 @@ export function useBranchSynchronizedWorkspace<TState extends Memento>(
   const synchronizerRef = useRef(synchronizer);
   const branchNameRef = useRef(branchName);
 
-  if (frequency < DEFAULT_FREQUENCY) {
-    throw new Error(
-      `Cannot have sync frequency less than ${
-        DEFAULT_FREQUENCY / 1000
-      } seconds.`,
-    );
+  if (frequency < 1) {
+    throw new Error(`Cannot have sync frequency less than 1 second.`);
   }
 
   const [fetching, setFetching] = useState(false);
@@ -106,58 +107,109 @@ export function useBranchSynchronizedWorkspace<TState extends Memento>(
     getInitialStatus(initial),
   );
 
-  const handleResult = useCallback((result: SynchronizationState<TState>) => {
-    if (isConflict(result)) {
-      const localBranch = result.workspace.branches.getLocalBranch(
-        branchNameRef.current,
-      );
-      const remoteBranch = result.workspace.branches.getRemoteBranch(
-        branchNameRef.current,
-      );
-
-      const manipulator = new WorkspaceManipulator<TState>(result.workspace);
-
-      function takeLocal() {
-        const localResult = manipulator.mergeSource(
-          remoteBranch.head,
-          branchNameRef.current,
-        ).workspace;
-
-        setState({
-          status: "Synced",
-          workspace: localResult,
-          lastSynced: new Date(),
-        });
+  const apply = useCallback(
+    (command: Command<TState>) => {
+      if (!("workspace" in state)) {
+        throw new Error();
       }
 
-      function takeRemote() {
-        const remoteResult = manipulator.mergeTarget(
-          remoteBranch.head,
-          branchNameRef.current,
-        ).workspace;
+      const manipulator = new WorkspaceManipulator(state.workspace);
 
-        setState({
-          status: "Synced",
-          workspace: remoteResult,
-          lastSynced: new Date(),
-        });
-      }
+      const applied = manipulator.apply(command);
 
-      setState({
-        status: "Conflict",
-        local: result.workspace.getState(localBranch.head),
-        remote: result.workspace.getState(remoteBranch.head),
-        takeLocal,
-        takeRemote,
-      });
-    } else {
-      setState({
-        status: "Synced",
-        workspace: result.workspace,
-        lastSynced: new Date(),
-      });
+      setState((state) => ({ ...state, workspace: applied.workspace }));
+    },
+    [state],
+  );
+
+  const undo = useCallback(() => {
+    if (!("workspace" in state)) {
+      throw new Error();
     }
-  }, []);
+
+    const manipulator = new WorkspaceManipulator(state.workspace);
+
+    const undid = manipulator.undo(branchName);
+
+    setState((state) => ({ ...state, workspace: undid.workspace }));
+  }, [branchName, state]);
+
+  const redo = useCallback(() => {
+    if (!("workspace" in state)) {
+      throw new Error();
+    }
+
+    const manipulator = new WorkspaceManipulator(state.workspace);
+
+    const undid = manipulator.redo(branchName);
+
+    setState((state) => ({ ...state, workspace: undid.workspace }));
+  }, [branchName, state]);
+
+  const handleResult = useCallback(
+    (result: SynchronizationState<TState>) => {
+      if (isConflict(result)) {
+        const localBranch = result.workspace.branches.getLocalBranch(
+          branchNameRef.current,
+        );
+        const remoteBranch = result.workspace.branches.getRemoteBranch(
+          branchNameRef.current,
+        );
+
+        const manipulator = new WorkspaceManipulator<TState>(result.workspace);
+
+        function takeLocal() {
+          const localResult = manipulator.mergeSource(
+            remoteBranch.head,
+            branchNameRef.current,
+          ).workspace;
+
+          setState({
+            status: "Synced",
+            workspace: localResult,
+            lastSynced: new Date(),
+            apply,
+            undo,
+            redo,
+          });
+        }
+
+        function takeRemote() {
+          const remoteResult = manipulator.mergeTarget(
+            remoteBranch.head,
+            branchNameRef.current,
+          ).workspace;
+
+          setState({
+            status: "Synced",
+            workspace: remoteResult,
+            lastSynced: new Date(),
+            apply,
+            undo,
+            redo,
+          });
+        }
+
+        setState({
+          status: "Conflict",
+          local: result.workspace.getState(localBranch.head),
+          remote: result.workspace.getState(remoteBranch.head),
+          takeLocal,
+          takeRemote,
+        });
+      } else {
+        setState({
+          status: "Synced",
+          workspace: result.workspace,
+          lastSynced: new Date(),
+          apply,
+          undo,
+          redo,
+        });
+      }
+    },
+    [apply, redo, undo],
+  );
 
   const handleFailure = useCallback((e: unknown) => {
     console.error(e);

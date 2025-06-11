@@ -68,9 +68,9 @@ export class BranchSynchronizerImp<TState extends Memento>
     branchName: string
   ): Promise<Workspace<TState>> {
     if (!workspace.branches.containsLocalBranch(branchName)) {
-      // TODO: Support creating new branches.
+      await push(workspace, this._fetcher, branchName);
 
-      throw new Error(`Missing local branch "${branchName}"`);
+      return workspace;
     } else if (!workspace.branches.containsRemoteBranch(branchName)) {
       const local = workspace.branches.getLocalBranch(branchName);
       const hashes = getAllPreviousCommitsHashes(workspace, local.head);

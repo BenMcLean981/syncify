@@ -1,5 +1,5 @@
-import { CommitSnapshot } from '../commit';
 import { type Branch } from '../branches';
+import { CommitSnapshot } from '../commit';
 
 export interface RemoteFetcher {
   /**

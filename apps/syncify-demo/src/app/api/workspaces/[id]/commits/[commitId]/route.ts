@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation';
 import { NextRequest, NextResponse } from 'next/server';
 import { DiskStorageSystem } from '../../disk-storage-system';
 
@@ -17,6 +18,10 @@ export async function GET(
   const params = await props.params;
 
   const storageSystem = new DiskStorageSystem(params.id);
+
+  if (!(await storageSystem.commits.contains(params.commitId))) {
+    return notFound();
+  }
 
   const commit = storageSystem.commits.get(params.commitId);
 
